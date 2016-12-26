@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-import scrapy
-from scrapy.selector import Selector
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from SPIDER.items import Article
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+
 from SPIDER.items import Article
 
-class WikiSpider(scrapy.Spider):
+class WikiSpider(CrawlSpider):
     name = "wiki"
-    allowed_domains = ["wiki.com"]
+    allowed_domains = ["en.wikipedia.org"]
     start_urls = ['http://en.wikipedia.org/wiki/Main_Page', 'https://en.wikipedia.org/wiki/Python']
+    rules = [Rule(SgmlLinkExtractor(allow=('(/wiki/).*$'),), callback='parse', follow=True)]
 
     def parse(self, response):
         item = Article()
@@ -14,3 +17,6 @@ class WikiSpider(scrapy.Spider):
         item['title'] = title
         print item
         return item
+
+
+        
